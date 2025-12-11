@@ -5,6 +5,10 @@ public record Product(String name, int price, int stock, Promotion promotion) {
         return new Product(productName, price, stock, Promotion.getPromotionFrom(promotionName));
     }
 
+    public boolean hasPromotion() {
+        return this.promotion != Promotion.NONE;
+    }
+
     public String getPromotionName() {
         return promotion.getName();
     }

@@ -6,7 +6,7 @@ import store.domain.Promotion;
 import java.util.Arrays;
 import java.util.List;
 
-public class StockCSVParser {
+public class ProductCSVParser {
 
     private static final String DELIMITER = ",";
     public static final int PRODUCT_NAME_COL = 0;
@@ -14,8 +14,10 @@ public class StockCSVParser {
     public static final int QUANTITY_COL = 2;
     public static final int PROMOTION_COL = 3;
 
-    public static Product parseProduct(String line) {
-        List<String> parts = Arrays.asList(line.split(DELIMITER));
+    public static Product parse(String line) {
+        List<String> parts = Arrays.stream(line.split(DELIMITER))
+                .map(String::strip)
+                .toList();
         String name = parts.get(PRODUCT_NAME_COL);
         int price =  Integer.parseInt(parts.get(PRICE_COL));
         int quantity = Integer.parseInt(parts.get(QUANTITY_COL));

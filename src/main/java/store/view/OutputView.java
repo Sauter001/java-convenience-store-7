@@ -1,6 +1,7 @@
 package store.view;
 
 import store.domain.Product;
+import store.exception.ServiceException;
 
 import java.text.DecimalFormat;
 import java.util.List;
@@ -14,6 +15,15 @@ public class OutputView {
         for (Product product : products) {
             displaySingleStock(product);
         }
+        displayBlank();
+    }
+
+    public void displayError(ServiceException serviceException) {
+        System.out.println(serviceException.getMessage());
+    }
+
+    private static void displayBlank() {
+        System.out.println();
     }
 
     private void displaySingleStock(Product product) {
