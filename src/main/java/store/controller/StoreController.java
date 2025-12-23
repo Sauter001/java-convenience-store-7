@@ -1,8 +1,11 @@
 package store.controller;
 
+import store.exception.ServiceException;
 import store.service.StoreService;
 import store.view.InputView;
 import store.view.OutputView;
+
+import java.util.function.Supplier;
 
 public class StoreController {
     private final InputView inputView;
@@ -17,5 +20,26 @@ public class StoreController {
 
     public void run() {
 
+    }
+
+    private void retry(Runnable task) {
+        while (true) {
+            try {
+                task.run();
+                return;
+            } catch (ServiceException e) {
+                outputView.printError(e);
+            }
+        }
+    }
+
+    private <T> T retry(Supplier<T> task) {
+        while (true) {
+            try {
+                return task.get();
+            } catch (ServiceException e) {
+                outputView.printError(e);
+            }
+        }
     }
 }
