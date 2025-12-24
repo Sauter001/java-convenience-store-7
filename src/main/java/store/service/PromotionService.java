@@ -1,6 +1,6 @@
 package store.service;
 
-import store.domain.repository.PromotionRepository;
+import store.repository.PromotionRepository;
 
 public class PromotionService {
     private final PromotionRepository promotionRepository;

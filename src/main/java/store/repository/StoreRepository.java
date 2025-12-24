@@ -1,4 +1,4 @@
-package store.domain.repository;
+package store.repository;
 
 public class StoreRepository {
     private final ProductRepository productRepository;

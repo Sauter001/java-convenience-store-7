@@ -1,23 +1,23 @@
 package store.config;
 
-import store.domain.repository.ProductRepository;
-import store.domain.repository.PromotionRepository;
+import store.repository.ProductRepository;
+import store.repository.PromotionRepository;
 import store.service.DiscountService;
 import store.service.OrderService;
 import store.service.PromotionService;
 import store.service.StoreService;
 
 public class AppConfig {
-    private final ProductRepository productRepository;
     private final PromotionRepository promotionRepository;
+    private final ProductRepository productRepository;
 
     public AppConfig() {
-        this.productRepository = new ProductRepository();
         this.promotionRepository = new PromotionRepository();
+        this.productRepository = new ProductRepository();
     }
 
     private OrderService createOrderService() {
-        return new OrderService(productRepository);
+        return new OrderService(productRepository, promotionRepository);
     }
 
     private PromotionService createPromotionService() {
