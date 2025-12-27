@@ -25,12 +25,12 @@ public class OrderService {
         List<Product> products = new ArrayList<>();
 
         for (ProductData data : dataList) {
-            products.add(toProduct(data));
+            products.add(convertDatatoProduct(data));
         }
         return products;
     }
 
-    private Product toProduct(ProductData data) {
+    private Product convertDatatoProduct(ProductData data) {
         Promotion promotion = resolvePromotion(data.promotionName());
         Stock stock = createStock(data.quantity(), promotion);
         return new Product(data.name(), data.price(), stock, promotion);

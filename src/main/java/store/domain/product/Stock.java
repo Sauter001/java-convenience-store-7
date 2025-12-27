@@ -1,11 +1,19 @@
 package store.domain.product;
 
 public class Stock {
-    private int normalQuantity;
-    private int promotionQuantity;
+    private int normalStock;
+    private int promotionStock;
 
-    public Stock(int normalQuantity, int promotionQuantity) {
-        this.normalQuantity = normalQuantity;
-        this.promotionQuantity = promotionQuantity;
+    public Stock(int normalStock, int promotionStock) {
+        this.normalStock = normalStock;
+        this.promotionStock = promotionStock;
+    }
+
+    public int getNormalStock() {
+        return normalStock;
+    }
+
+    public int getPromotionStock() {
+        return promotionStock;
     }
 }

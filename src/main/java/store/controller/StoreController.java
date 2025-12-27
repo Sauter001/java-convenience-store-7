@@ -1,10 +1,12 @@
 package store.controller;
 
+import store.domain.product.Products;
 import store.exception.ServiceException;
 import store.service.StoreService;
 import store.view.InputView;
 import store.view.OutputView;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 public class StoreController {
@@ -19,7 +21,8 @@ public class StoreController {
     }
 
     public void run() {
-
+        Products products = storeService.findAllProducts();
+        outputView.showStockInfo(products.toAllDisplayDtos());
     }
 
     private void retry(Runnable task) {

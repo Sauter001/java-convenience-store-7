@@ -21,8 +21,12 @@ public class CSVReader {
     }
 
     public List<Row> readRows() {
-        try (BufferedReader bufferedReader = getReader()) {
+        try (InputStream inputStream = getInputStream();
+             InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+             BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
+
             return readLines(bufferedReader);
+
         } catch (IOException ie) {
             throw new DomainNotFoundException(filePath);
         }
@@ -41,10 +45,11 @@ public class CSVReader {
         return rows.stream().skip(1).toList(); // header 넘기기
     }
 
-    private BufferedReader getReader() throws IOException {
-        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(filePath);) {
-            InputStreamReader inputStreamReader = new InputStreamReader(Objects.requireNonNull(inputStream));
-            return new BufferedReader(inputStreamReader);
+    private InputStream getInputStream() throws IOException {
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(filePath);
+        if (inputStream == null) {
+            throw new DomainNotFoundException(filePath);
         }
+        return inputStream;
     }
 }

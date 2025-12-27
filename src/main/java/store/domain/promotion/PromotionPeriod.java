@@ -1,6 +1,5 @@
 package store.domain.promotion;
 
-import camp.nextstep.edu.missionutils.DateTimes;
 import store.exception.ServiceException;
 
 import java.time.LocalDate;
@@ -22,6 +21,11 @@ public class PromotionPeriod {
     }
 
     public boolean isExpired() {
-        return endDate.isBefore(DateTimes.now().toLocalDate());
+        LocalDate today = LocalDate.now();
+        return today.isBefore(startDate) || today.isAfter(endDate);
+    }
+
+    boolean isExpiredAt(LocalDate date) {
+        return date.isBefore(startDate) || date.isAfter(endDate);
     }
 }
