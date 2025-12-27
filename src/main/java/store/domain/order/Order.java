@@ -8,14 +8,34 @@ import java.util.List;
 
 public class Order {
     private final Product product;
-    private final int quantity;
+    private int quantity;
 
     public Order(Product product, int quantity) {
         this.product = product;
         this.quantity = quantity;
     }
 
+    public String getProductName() {
+        return product.getName();
+    }
+
     public PromotionConfirmation getPromotionConfirmation() {
         return product.getPromotionConfirmation(quantity);
+    }
+
+    public boolean shouldSuggestAdditionalItem() {
+        return product.shouldSuggestAdditionalItem(quantity);
+    }
+
+    public int getAdditionalQuantity() {
+        return product.getAdditionalQuantity(quantity);
+    }
+
+    public void adjustQuantity(int newQuantity) {
+        this.quantity = newQuantity;
+    }
+
+    public void increaseQuantity(int additionalQuantity) {
+        this.quantity += additionalQuantity;
     }
 }

@@ -1,7 +1,11 @@
 package store.controller;
 
+import store.domain.io.BinaryResponse;
+import store.domain.order.Order;
 import store.domain.order.Orders;
 import store.domain.order.dto.OrderForm;
+import store.domain.order.dto.PromotionConfirmation;
+import store.domain.product.Product;
 import store.domain.product.Products;
 import store.exception.ServiceException;
 import store.service.StoreService;
@@ -25,15 +29,53 @@ public class StoreController {
     public void run() {
         Products products = storeService.findAllProducts();
         outputView.showStockInfo(products.toAllDisplayDtos());
-        Orders orders = retry(() -> {
-            List<OrderForm> orderForms = inputView.readOrders();
-            return storeService.convertToOrders(orderForms);
+        retry(() -> {
+            Orders orders = retry(this::convertFormToOrders);
+            processOrders(orders);
         });
-        determinePromotion(orders);
     }
 
-    private void determinePromotion(Orders orders) {
+    private Orders convertFormToOrders() {
+        List<OrderForm> orderForms = inputView.readOrders();
+        return storeService.convertToOrders(orderForms);
+    }
 
+    private void processOrders(Orders orders) {
+        for (Order order : orders) {
+            processOrder(order);
+        }
+    }
+
+    private void processOrder(Order order) {
+        checkAdditionalPromotion(order);
+        checkPartialPromotion(order);
+    }
+
+    private void checkAdditionalPromotion(Order order) {
+        if (!order.shouldSuggestAdditionalItem()) {
+            return;
+        }
+        int additionalQty = order.getAdditionalQuantity();
+        BinaryResponse response = inputView.confirmAdditionalItem(
+                order.getProductName(), additionalQty
+        );
+        if (response == BinaryResponse.YES) {
+            order.increaseQuantity(additionalQty);
+        }
+    }
+
+    private void checkPartialPromotion(Order order) {
+        PromotionConfirmation confirmation = order.getPromotionConfirmation();
+        if (confirmation instanceof PromotionConfirmation.PartiallyApplicable partial) {
+            handlePartialPromotion(order, partial);
+        }
+    }
+
+    private void handlePartialPromotion(Order order, PromotionConfirmation.PartiallyApplicable partial) {
+        BinaryResponse response = inputView.confirmPartialPromotion(partial);
+        if (response == BinaryResponse.NO) {
+            order.adjustQuantity(partial.promotionQuantity());
+        }
     }
 
     private void retry(Runnable task) {

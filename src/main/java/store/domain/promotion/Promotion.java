@@ -18,4 +18,22 @@ public class Promotion {
     public boolean isExpired() {
         return period.isExpired();
     }
+
+    public int getSetSize() {
+        return buyGetQuantity.getSetSize();
+    }
+
+    public int getRequiredQuantity() {
+        return buyGetQuantity.requiredQuantity();
+    }
+
+    public int getBonusQuantity() {
+        return buyGetQuantity.bonusQuantity();
+    }
+
+    public boolean shouldSuggestAdditional(int requestedQuantity, int availablePromotionStock) {
+        int remainder = requestedQuantity % getSetSize();
+        return remainder == getRequiredQuantity()
+                && availablePromotionStock >= requestedQuantity + getBonusQuantity();
+    }
 }

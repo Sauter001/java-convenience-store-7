@@ -25,6 +25,10 @@ public class Product {
         this.promotion = promotion;
     }
 
+    public String getName() {
+        return name;
+    }
+
     public boolean hasPromotion() {
         return promotion != null && !promotion.isExpired();
     }
@@ -46,14 +50,17 @@ public class Product {
 
     public PromotionConfirmation getPromotionConfirmation(int quantity) {
         StockState state = getStockState(quantity);
-
         if (state == StockState.INSUFFICIENT) {
             throw new StockExceededException();
         }
-        if (state == StockState.PROMOTION_ONLY) {
+        if (shouldReturnFullyApplicable(state)) {
             return createFullyApplicable(quantity);
         }
         return createPartiallyApplicable(quantity);
+    }
+
+    private boolean shouldReturnFullyApplicable(StockState state) {
+        return state == StockState.PROMOTION_ONLY || !hasPromotion();
     }
 
     private PromotionConfirmation createFullyApplicable(int quantity) {
@@ -66,5 +73,19 @@ public class Product {
         return new PromotionConfirmation.PartiallyApplicable(
                 name, promotionQuantity, regularQuantity
         );
+    }
+
+    public boolean shouldSuggestAdditionalItem(int quantity) {
+        if (!hasPromotion()) {
+            return false;
+        }
+        return promotion.shouldSuggestAdditional(quantity, stock.getPromotionStock());
+    }
+
+    public int getAdditionalQuantity(int quantity) {
+        if (!shouldSuggestAdditionalItem(quantity)) {
+            return 0;
+        }
+        return promotion.getBonusQuantity();
     }
 }
