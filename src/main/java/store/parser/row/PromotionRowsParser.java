@@ -4,6 +4,7 @@ import store.domain.io.Row;
 import store.domain.promotion.BuyGetQuantity;
 import store.domain.promotion.Promotion;
 import store.domain.promotion.PromotionPeriod;
+import store.exception.ServiceException;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -42,14 +43,37 @@ public class PromotionRowsParser implements RowParser<List<Promotion>> {
 
     private Promotion columnsToPromotion(Map<String, String> promotionMap) {
         String name = promotionMap.get(COL_NAME);
-        int buy = Integer.parseInt(promotionMap.get(COL_BUY));
-        int get = Integer.parseInt(promotionMap.get(COL_GET));
+        int buy = parseBuy(promotionMap);
+        int get = parseGet(promotionMap);
         LocalDate startDate = LocalDate.parse(promotionMap.get(COL_START_DATE));
         LocalDate endDate = LocalDate.parse(promotionMap.get(COL_END_DATE));
 
         BuyGetQuantity buyGetQuantity = new BuyGetQuantity(buy, get);
         PromotionPeriod period = new PromotionPeriod(startDate, endDate);
-
         return new Promotion(name, buyGetQuantity, period);
+    }
+
+    private int parseBuy(Map<String, String> promotionMap) {
+        int buy = Integer.parseInt(promotionMap.get(COL_BUY));
+        validateBuyQuantity(buy);
+        return buy;
+    }
+
+    private int parseGet(Map<String, String> promotionMap) {
+        int get = Integer.parseInt(promotionMap.get(COL_GET));
+        validateGetQuantity(get);
+        return get;
+    }
+
+    private void validateBuyQuantity(int buy) {
+        if (buy <= 0) {
+            throw new ServiceException("구매 수량은 0보다 커야 합니다.");
+        }
+    }
+
+    private void validateGetQuantity(int get) {
+        if (get <= 0) {
+            throw new ServiceException("증정 수량은 0보다 커야 합니다.");
+        }
     }
 }

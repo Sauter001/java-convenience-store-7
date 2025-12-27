@@ -17,7 +17,7 @@ public class InputView {
     }
 
     public BinaryResponse confirmOrder(Order order) {
-
+        return null;
     }
 
     private BinaryResponse confirm(String prompt) {

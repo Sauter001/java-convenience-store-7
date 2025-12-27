@@ -2,6 +2,7 @@ package store.parser.row;
 
 import store.domain.io.Row;
 import store.domain.product.ProductData;
+import store.exception.ServiceException;
 
 import java.util.*;
 
@@ -40,6 +41,20 @@ public class ProductRowsParser implements RowParser<List<ProductData>> {
         int quantity = Integer.parseInt(productMap.get(COL_QUANTITY));
         String promotionName = productMap.get(COL_PROMOTION);
 
+        validatePrice(price);
+        validateQuantity(quantity);
         return new ProductData(name, price, quantity, promotionName);
+    }
+
+    private void validatePrice(int price) {
+        if (price <= 0) {
+            throw new ServiceException("가격은 0보다 커야 합니다.");
+        }
+    }
+
+    private void validateQuantity(int quantity) {
+        if (quantity < 0) {
+            throw new ServiceException("수량은 0 이상이어야 합니다.");
+        }
     }
 }
