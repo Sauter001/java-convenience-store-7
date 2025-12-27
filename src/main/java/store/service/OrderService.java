@@ -2,7 +2,6 @@ package store.service;
 
 import store.domain.product.Product;
 import store.domain.product.ProductData;
-import store.domain.product.Products;
 import store.domain.product.Stock;
 import store.domain.promotion.Promotion;
 import store.exception.ProductNotFoundException;
@@ -43,7 +42,7 @@ public class OrderService {
         if (hasTwoItems(dataList)) {
             return mergeProducts(dataList.get(0), dataList.get(1));
         }
-        return convertDatatoProduct(dataList.get(0));
+        return convertDataToProduct(dataList.get(0));
     }
 
     private boolean hasTwoItems(List<ProductData> dataList) {
@@ -83,7 +82,7 @@ public class OrderService {
         return !NULL_ATTR.equals(data.promotionName());
     }
 
-    private Product convertDatatoProduct(ProductData data) {
+    private Product convertDataToProduct(ProductData data) {
         Promotion promotion = resolvePromotion(data.promotionName());
         Stock stock = createStock(data.quantity(), promotion);
         return new Product(data.name(), data.price(), stock, promotion);
@@ -109,12 +108,15 @@ public class OrderService {
     }
 
     public Product findProductByName(String productName) {
-        Optional<ProductData> productOptional = productRepository.findProductByName(productName);
-        if (productOptional.isEmpty()) {
+        List<ProductData> allData = productRepository.findAll();
+        List<ProductData> matchedData = allData.stream()
+                .filter(data -> data.name().equals(productName))
+                .toList();
+
+        if (matchedData.isEmpty()) {
             throw new ProductNotFoundException();
         }
 
-        ProductData productData = productOptional.get();
-        return convertDatatoProduct(productData);
+        return createProductFromGroup(matchedData);
     }
 }

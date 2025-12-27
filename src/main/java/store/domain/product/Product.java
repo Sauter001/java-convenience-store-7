@@ -36,12 +36,22 @@ public class Product {
     public List<ProductDisplayDto> toDisplayDtos() {
         List<ProductDisplayDto> dtos = new ArrayList<>();
         if (hasPromotion() && stock.getPromotionStock() > 0) {
-            dtos.add(new ProductDisplayDto(this.name, this.price, this.stock.getPromotionStock(), this.promotion.getName()));
+            addPromotionDisplayDtos(dtos);
         }
-        dtos.add(
-                new ProductDisplayDto(this.name, this.price, this.stock.getNormalStock(), null)
-        );
+        if (!hasPromotion() || stock.getPromotionStock() == 0) {
+            addNormalDisplayDto(dtos);
+        }
         return dtos;
+    }
+
+    private void addPromotionDisplayDtos(List<ProductDisplayDto> dtos) {
+        dtos.add(new ProductDisplayDto(this.name, this.price, this.stock.getPromotionStock(), this.promotion.getName()));
+        dtos.add(new ProductDisplayDto(this.name, this.price, this.stock.getNormalStock(), null));
+    }
+
+    private void addNormalDisplayDto(List<ProductDisplayDto> dtos) {
+        int totalStock = stock.getPromotionStock() + stock.getNormalStock();
+        dtos.add(new ProductDisplayDto(this.name, this.price, totalStock, null));
     }
 
     public StockState getStockState(int quantity) {
