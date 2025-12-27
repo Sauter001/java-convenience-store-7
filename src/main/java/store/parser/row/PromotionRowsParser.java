@@ -1,4 +1,4 @@
-package store.parser;
+package store.parser.row;
 
 import store.domain.io.Row;
 import store.domain.promotion.BuyGetQuantity;
@@ -22,11 +22,9 @@ public class PromotionRowsParser implements RowParser<List<Promotion>> {
 
     @Override
     public List<Promotion> parse(List<Row> rows) {
-        List<Promotion> promotions = new ArrayList<>();
-        for (Row row : rows) {
-            promotions.add(convertToPromotion(row));
-        }
-        return promotions;
+        return rows.stream()
+                .map(this::convertToPromotion)
+                .toList();
     }
 
     private Promotion convertToPromotion(Row row) {

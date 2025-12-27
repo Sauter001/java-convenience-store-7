@@ -3,11 +3,12 @@ package store.repository;
 import store.constant.FileConstant;
 import store.domain.io.Row;
 import store.domain.product.ProductData;
-import store.parser.ProductRowsParser;
+import store.parser.row.ProductRowsParser;
 import store.tool.CSVReader;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class ProductRepository {
     private final List<ProductData> products;
@@ -25,5 +26,9 @@ public class ProductRepository {
 
     public List<ProductData> findAll() {
         return new ArrayList<>(products);
+    }
+
+    public Optional<ProductData> findProductByName(String productName) {
+        return products.stream().filter(p -> p.name().equals(productName)).findFirst();
     }
 }

@@ -3,7 +3,7 @@ package store.repository;
 import store.constant.FileConstant;
 import store.domain.io.Row;
 import store.domain.promotion.Promotion;
-import store.parser.PromotionRowsParser;
+import store.parser.row.PromotionRowsParser;
 import store.tool.CSVReader;
 
 import java.util.HashMap;

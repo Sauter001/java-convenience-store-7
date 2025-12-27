@@ -2,7 +2,6 @@ package store.domain.product;
 
 import store.domain.product.dto.ProductDisplayDto;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Products {
@@ -13,10 +12,8 @@ public class Products {
     }
 
     public List<ProductDisplayDto> toAllDisplayDtos() {
-        List<ProductDisplayDto> dtos = new ArrayList<>();
-        for (Product product : products) {
-            dtos.addAll(product.toDisplayDtos());
-        }
-        return dtos;
+        return this.products.stream()
+                .flatMap(p -> p.toDisplayDtos().stream())
+                .toList();
     }
 }

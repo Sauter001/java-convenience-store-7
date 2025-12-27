@@ -1,4 +1,4 @@
-package store.parser;
+package store.parser.input;
 
 @FunctionalInterface
 public interface Parser<T> {

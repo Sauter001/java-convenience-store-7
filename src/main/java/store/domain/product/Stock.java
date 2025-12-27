@@ -16,4 +16,14 @@ public class Stock {
     public int getPromotionStock() {
         return promotionStock;
     }
+
+    public StockState checkStockState(int quantity) {
+        if (promotionStock >= quantity) {
+            return StockState.PROMOTION_ONLY;
+        }
+        if (promotionStock + normalStock >= quantity) {
+            return StockState.PROMOTION_WITH_NORMAL;
+        }
+        return StockState.INSUFFICIENT;
+    }
 }

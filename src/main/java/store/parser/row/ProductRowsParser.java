@@ -1,4 +1,4 @@
-package store.parser;
+package store.parser.row;
 
 import store.domain.io.Row;
 import store.domain.product.ProductData;

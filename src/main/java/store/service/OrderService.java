@@ -2,16 +2,21 @@ package store.service;
 
 import store.domain.product.Product;
 import store.domain.product.ProductData;
+import store.domain.product.Products;
 import store.domain.product.Stock;
 import store.domain.promotion.Promotion;
+import store.exception.ProductNotFoundException;
 import store.exception.ServiceException;
 import store.repository.ProductRepository;
 import store.repository.PromotionRepository;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class OrderService {
+    public static final String NULL_ATTR = "null";
     private final ProductRepository productRepository;
     private final PromotionRepository promotionRepository;
 
@@ -22,12 +27,60 @@ public class OrderService {
 
     public List<Product> getProducts() {
         List<ProductData> dataList = productRepository.findAll();
-        List<Product> products = new ArrayList<>();
+        return groupByProductName(dataList);
+    }
 
-        for (ProductData data : dataList) {
-            products.add(convertDatatoProduct(data));
+    private List<Product> groupByProductName(List<ProductData> dataList) {
+        Map<String, List<ProductData>> grouped = dataList.stream()
+                .collect(Collectors.groupingBy(ProductData::name));
+
+        return grouped.values().stream()
+                .map(this::createProductFromGroup)
+                .toList();
+    }
+
+    private Product createProductFromGroup(List<ProductData> dataList) {
+        if (hasTwoItems(dataList)) {
+            return mergeProducts(dataList.get(0), dataList.get(1));
         }
-        return products;
+        return convertDatatoProduct(dataList.get(0));
+    }
+
+    private boolean hasTwoItems(List<ProductData> dataList) {
+        return dataList.size() == 2;
+    }
+
+    private Product mergeProducts(ProductData first, ProductData second) {
+        int normalStock = getNormalStock(first, second);
+        int promotionStock = getPromotionStock(first, second);
+        Promotion promotion = getActivePromotion(first, second);
+
+        return new Product(first.name(), first.price(), new Stock(normalStock, promotionStock), promotion);
+    }
+
+    private int getNormalStock(ProductData first, ProductData second) {
+        if (hasPromotion(first)) {
+            return second.quantity();
+        }
+        return first.quantity();
+    }
+
+    private int getPromotionStock(ProductData first, ProductData second) {
+        if (hasPromotion(first)) {
+            return first.quantity();
+        }
+        return second.quantity();
+    }
+
+    private Promotion getActivePromotion(ProductData first, ProductData second) {
+        if (hasPromotion(first)) {
+            return resolvePromotion(first.promotionName());
+        }
+        return resolvePromotion(second.promotionName());
+    }
+
+    private boolean hasPromotion(ProductData data) {
+        return !NULL_ATTR.equals(data.promotionName());
     }
 
     private Product convertDatatoProduct(ProductData data) {
@@ -37,7 +90,7 @@ public class OrderService {
     }
 
     private Promotion resolvePromotion(String promotionName) {
-        if ("null".equals(promotionName)) {
+        if (NULL_ATTR.equals(promotionName)) {
             return null;
         }
 
@@ -53,5 +106,15 @@ public class OrderService {
             return new Stock(quantity, 0);
         }
         return new Stock(0, quantity);
+    }
+
+    public Product findProductByName(String productName) {
+        Optional<ProductData> productOptional = productRepository.findProductByName(productName);
+        if (productOptional.isEmpty()) {
+            throw new ProductNotFoundException();
+        }
+
+        ProductData productData = productOptional.get();
+        return convertDatatoProduct(productData);
     }
 }

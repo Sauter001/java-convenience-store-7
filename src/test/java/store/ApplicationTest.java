@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class ApplicationTest extends NsTest {
     @Test
-    void 파일에_있는_상품_목록_출력() {
+    void should_print_product_list_from_file() {
         assertSimpleTest(() -> {
             run("[물-1]", "N", "N");
             assertThat(output()).contains(
@@ -38,7 +38,7 @@ class ApplicationTest extends NsTest {
     }
 
     @Test
-    void 여러_개의_일반_상품_구매() {
+    void should_purchase_multiple_normal_products() {
         assertSimpleTest(() -> {
             run("[비타민워터-3],[물-2],[정식도시락-2]", "N", "N");
             assertThat(output().replaceAll("\\s", "")).contains("내실돈18,300");
@@ -46,7 +46,7 @@ class ApplicationTest extends NsTest {
     }
 
     @Test
-    void 기간에_해당하지_않는_프로모션_적용() {
+    void should_not_apply_promotion_outside_period() {
         assertNowTest(() -> {
             run("[감자칩-2]", "N", "N");
             assertThat(output().replaceAll("\\s", "")).contains("내실돈3,000");
@@ -54,7 +54,7 @@ class ApplicationTest extends NsTest {
     }
 
     @Test
-    void 예외_테스트() {
+    void should_throw_exception_test() {
         assertSimpleTest(() -> {
             runException("[컵라면-12]", "N", "N");
             assertThat(output()).contains("[ERROR] 재고 수량을 초과하여 구매할 수 없습니다. 다시 입력해 주세요.");

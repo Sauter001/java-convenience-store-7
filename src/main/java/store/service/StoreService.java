@@ -1,5 +1,8 @@
 package store.service;
 
+import store.domain.order.Order;
+import store.domain.order.Orders;
+import store.domain.order.dto.OrderForm;
 import store.domain.product.Product;
 import store.domain.product.Products;
 
@@ -18,5 +21,17 @@ public class StoreService {
 
     public Products findAllProducts() {
         return new Products(orderService.getProducts());
+    }
+
+    public Orders convertToOrders(List<OrderForm> orderForms) {
+        List<Order> orders = orderForms.stream()
+                .map(this::makeOrderFromForm)
+                .toList();
+        return new Orders(orders);
+    }
+
+    private Order makeOrderFromForm(OrderForm orderForm) {
+        Product product = orderService.findProductByName(orderForm.productName());
+        return new Order(product, orderForm.quantity());
     }
 }

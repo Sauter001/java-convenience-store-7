@@ -1,5 +1,7 @@
 package store.controller;
 
+import store.domain.order.Orders;
+import store.domain.order.dto.OrderForm;
 import store.domain.product.Products;
 import store.exception.ServiceException;
 import store.service.StoreService;
@@ -23,6 +25,15 @@ public class StoreController {
     public void run() {
         Products products = storeService.findAllProducts();
         outputView.showStockInfo(products.toAllDisplayDtos());
+        Orders orders = retry(() -> {
+            List<OrderForm> orderForms = inputView.readOrders();
+            return storeService.convertToOrders(orderForms);
+        });
+        determinePromotion(orders);
+    }
+
+    private void determinePromotion(Orders orders) {
+
     }
 
     private void retry(Runnable task) {
