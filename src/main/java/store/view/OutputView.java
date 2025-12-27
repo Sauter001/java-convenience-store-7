@@ -23,7 +23,14 @@ public class OutputView {
     private void displayProduct(ProductDisplayDto productDto) {
         String format = "- %s %s원 %s %s\n";
         System.out.printf(format, productDto.productName(), getDecimalFormat(productDto.price()),
-                displayQuantity(productDto.stockQuantity()), productDto.promotionName());
+                displayQuantity(productDto.stockQuantity()), displayPromotionName(productDto.promotionName()));
+    }
+
+    private  String displayPromotionName(String promotionName) {
+        if (promotionName == null) {
+            return "";
+        }
+        return promotionName;
     }
 
     private String displayQuantity(int quantity) {
