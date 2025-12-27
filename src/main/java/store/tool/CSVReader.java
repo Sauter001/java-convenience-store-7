@@ -1,7 +1,7 @@
 package store.tool;
 
 import store.domain.io.Row;
-import store.exception.FileNotFoundException;
+import store.exception.DomainNotFoundException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class CSVReader {
     public static final String DELIMITER = ",";
@@ -25,7 +24,7 @@ public class CSVReader {
         try (BufferedReader bufferedReader = getReader()) {
             return readLines(bufferedReader);
         } catch (IOException ie) {
-            throw new FileNotFoundException(filePath);
+            throw new DomainNotFoundException(filePath);
         }
     }
 
