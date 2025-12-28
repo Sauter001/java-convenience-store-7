@@ -3,6 +3,7 @@ package store.controller;
 import store.domain.io.BinaryResponse;
 import store.domain.order.Order;
 import store.domain.order.Orders;
+import store.domain.order.Receipt;
 import store.domain.order.dto.OrderForm;
 import store.domain.order.dto.PromotionConfirmation;
 import store.domain.product.Products;
@@ -26,8 +27,15 @@ public class StoreController {
     }
 
     public void run() {
-        displayProducts();
-        processOrderWithRetry();
+        do {
+            displayProducts();
+            processOrderWithRetry();
+        } while (isContinueShopping());
+    }
+
+    private boolean isContinueShopping() {
+        BinaryResponse response = inputView.confirmAdditionalPurchase();
+        return response == BinaryResponse.YES;
     }
 
     private void displayProducts() {
@@ -40,9 +48,9 @@ public class StoreController {
             Orders orders = retry(this::convertFormToOrders);
             processOrders(orders);
             processMembership(orders);
+            storeService.processStock(orders);
         });
     }
-
 
 
     private Orders convertFormToOrders() {
@@ -94,11 +102,9 @@ public class StoreController {
     }
 
     private void processMembershipResponse(BinaryResponse response, Orders orders) {
-        if (response == BinaryResponse.NO) {
-            return;
-        }
-
-        int memberShipDiscount = orders.calculateMembershipDiscount();
+        boolean isMembership = response.getBoolean();
+        Receipt receipt = storeService.createReceipt(orders, isMembership);
+        outputView.displayReceipt(receipt);
     }
 
     private void retry(Runnable task) {

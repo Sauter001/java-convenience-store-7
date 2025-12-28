@@ -1,5 +1,6 @@
 package store.domain.order;
 
+import store.domain.order.dto.OrderPresentedDto;
 import store.domain.order.dto.OrderReceiptDto;
 import store.domain.order.dto.PromotionConfirmation;
 import store.domain.product.Product;
@@ -16,6 +17,10 @@ public class Order {
 
     public String getProductName() {
         return product.getName();
+    }
+
+    public int getQuantity() {
+        return quantity;
     }
 
     public PromotionConfirmation getPromotionConfirmation() {
@@ -67,5 +72,24 @@ public class Order {
 
     private int calculateDiscount(PromotionConfirmation.FullyApplicable full) {
         return this.product.calculatePromotionDiscount(full.totalQuantity());
+    }
+
+    public int getPresentedQuantity() {
+        PromotionConfirmation confirmation = getPromotionConfirmation();
+        if (confirmation instanceof PromotionConfirmation.FullyApplicable fullyApplicable) {
+            return this.product.getPresentedQuantity(fullyApplicable.totalQuantity());
+        }
+        if (confirmation instanceof PromotionConfirmation.PartiallyApplicable partiallyApplicable) {
+            return this.product.getPresentedQuantity(partiallyApplicable.promotionQuantity());
+        }
+        return 0;
+    }
+
+    public OrderPresentedDto toPresentedDto() {
+        int presentedQuantity = getPresentedQuantity();
+        if (presentedQuantity == 0) {
+            return null;
+        }
+        return new OrderPresentedDto(this.product.getName(), presentedQuantity);
     }
 }

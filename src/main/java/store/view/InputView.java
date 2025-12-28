@@ -57,4 +57,9 @@ public class InputView {
         String message = "멤버십 할인을 받으시겠습니까?" + YES_OR_NO + "\n";
         return confirm(message);
     }
+
+    public BinaryResponse confirmAdditionalPurchase() {
+        String message = "감사합니다. 구매하고 싶은 다른 상품이 있나요?" + YES_OR_NO + "\n";
+        return confirm(message);
+    }
 }

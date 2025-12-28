@@ -11,22 +11,27 @@ import store.repository.PromotionRepository;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class OrderService {
     public static final String NULL_ATTR = "null";
     private final ProductRepository productRepository;
     private final PromotionRepository promotionRepository;
+    private List<Product> cachedProducts;
 
     public OrderService(ProductRepository productRepository, PromotionRepository promotionRepository) {
         this.productRepository = productRepository;
         this.promotionRepository = promotionRepository;
+        this.cachedProducts = null;
     }
 
     public List<Product> getProducts() {
-        List<ProductData> dataList = productRepository.findAll();
-        return groupByProductName(dataList);
+        if (Objects.isNull(this.cachedProducts)) {
+            List<ProductData> dataList = productRepository.findAll();
+            cachedProducts = groupByProductName(dataList);
+        }
+        return cachedProducts;
     }
 
     private List<Product> groupByProductName(List<ProductData> dataList) {
@@ -108,15 +113,9 @@ public class OrderService {
     }
 
     public Product findProductByName(String productName) {
-        List<ProductData> allData = productRepository.findAll();
-        List<ProductData> matchedData = allData.stream()
-                .filter(data -> data.name().equals(productName))
-                .toList();
-
-        if (matchedData.isEmpty()) {
-            throw new ProductNotFoundException();
-        }
-
-        return createProductFromGroup(matchedData);
+        return getProducts().stream()
+                .filter(p -> p.getName().equals(productName))
+                .findFirst()
+                .orElseThrow(ProductNotFoundException::new);
     }
 }

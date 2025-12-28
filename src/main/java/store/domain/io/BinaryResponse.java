@@ -19,4 +19,8 @@ public enum BinaryResponse {
                 .findFirst()
                 .orElseThrow(InvalidInputException::new);
     }
+
+    public boolean getBoolean() {
+        return this.equals(BinaryResponse.YES);
+    }
 }

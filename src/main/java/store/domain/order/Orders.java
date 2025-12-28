@@ -1,9 +1,11 @@
 package store.domain.order;
 
+import store.domain.order.dto.OrderPresentedDto;
 import store.domain.order.dto.OrderReceiptDto;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 public class Orders implements Iterable<Order> {
     public static final double MEMBERSHIP_DISCOUNT_RATE = 0.3;
@@ -37,5 +39,18 @@ public class Orders implements Iterable<Order> {
         return this.orders.stream()
                 .map(Order::toReceiptDto)
                 .toList();
+    }
+
+    public List<OrderPresentedDto> toPresentedDtos() {
+        return this.orders.stream()
+                .map(Order::toPresentedDto)
+                .filter(Objects::nonNull)
+                .toList();
+    }
+
+    public int getPromotionDiscount() {
+        return this.orders.stream()
+                .mapToInt(Order::getPromotionDiscount)
+                .sum();
     }
 }

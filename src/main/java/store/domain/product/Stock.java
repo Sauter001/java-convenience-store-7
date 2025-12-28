@@ -34,4 +34,9 @@ public class Stock {
         }
         return StockState.INSUFFICIENT;
     }
+
+    public void decrease(int promotionQuantity, int normalQuantity) {
+        this.promotionStock -= promotionQuantity;
+        this.normalStock -= normalQuantity;
+    }
 }

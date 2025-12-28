@@ -97,8 +97,13 @@ public class Product {
     }
 
     private PromotionConfirmation createPartiallyApplicable(int quantity) {
-        int promotionQuantity = stock.getPromotionStock();
+        int promotionStock = stock.getPromotionStock();
+        int setSize = promotion.getSetSize();
+
+        int maxSets = promotionStock / setSize;
+        int promotionQuantity = maxSets * setSize;
         int regularQuantity = quantity - promotionQuantity;
+
         return new PromotionConfirmation.PartiallyApplicable(
                 name, promotionQuantity, regularQuantity
         );
@@ -122,8 +127,36 @@ public class Product {
         return this.price * quantity;
     }
 
-   public int calculatePromotionDiscount(int appliedQuantity) {
+    public int getPresentedQuantity(int appliedQuantity) {
+        int discount = calculatePromotionDiscount(appliedQuantity);
+        if (discount == 0) {
+            return 0;
+        }
+        return discount / this.price;
+    }
+
+    public int calculatePromotionDiscount(int appliedQuantity) {
         int freeQuantity = appliedQuantity / promotion.getSetSize();
         return freeQuantity * this.price;
-   }
+    }
+
+    public void decreaseStock(int quantity) {
+        PromotionConfirmation confirmation = getPromotionConfirmation(quantity);
+        if (decreaseStockByPromotion(confirmation)) {
+            return;
+        }
+        stock.decrease(0, quantity);
+    }
+
+    private boolean decreaseStockByPromotion(PromotionConfirmation confirmation) {
+        if (confirmation instanceof  PromotionConfirmation.FullyApplicable fully) {
+            stock.decrease(fully.totalQuantity(), 0);
+            return true;
+        }
+        if (confirmation instanceof PromotionConfirmation.PartiallyApplicable partial) {
+            stock.decrease(partial.promotionQuantity(), partial.regularPriceQuantity());
+            return true;
+        }
+        return false;
+    }
 }
