@@ -17,6 +17,14 @@ public class Stock {
         return promotionStock;
     }
 
+    public int getTotalStock() {
+        return normalStock + promotionStock;
+    }
+
+    public boolean hasPromotionStock() {
+        return promotionStock > 0;
+    }
+
     public StockState checkStockState(int quantity) {
         if (promotionStock >= quantity) {
             return StockState.PROMOTION_ONLY;

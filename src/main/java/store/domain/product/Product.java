@@ -25,6 +25,12 @@ public class Product {
         this.promotion = promotion;
     }
 
+    private static void validateStock(StockState state) {
+        if (state == StockState.INSUFFICIENT) {
+            throw new StockExceededException();
+        }
+    }
+
     public int getPrice() {
         return price;
     }
@@ -39,10 +45,10 @@ public class Product {
 
     public List<ProductDisplayDto> toDisplayDtos() {
         List<ProductDisplayDto> dtos = new ArrayList<>();
-        if (hasPromotion() && stock.getPromotionStock() > 0) {
+        if (hasPromotion() && stock.hasPromotionStock()) {
             addPromotionDisplayDtos(dtos);
         }
-        if (!hasPromotion() || stock.getPromotionStock() == 0) {
+        if (!hasPromotion() || !stock.hasPromotionStock()) {
             addNormalDisplayDto(dtos);
         }
         return dtos;
@@ -54,7 +60,7 @@ public class Product {
     }
 
     private void addNormalDisplayDto(List<ProductDisplayDto> dtos) {
-        int totalStock = stock.getPromotionStock() + stock.getNormalStock();
+        int totalStock = stock.getTotalStock();
         dtos.add(new ProductDisplayDto(this.name, this.price, totalStock, null));
     }
 
@@ -76,12 +82,6 @@ public class Product {
             return createFullyApplicable(quantity);
         }
         return createPartiallyApplicable(quantity);
-    }
-
-    private static void validateStock(StockState state) {
-        if (state == StockState.INSUFFICIENT) {
-            throw new StockExceededException();
-        }
     }
 
     private PromotionConfirmation createNoPromotion(int quantity) {
@@ -117,4 +117,13 @@ public class Product {
         }
         return promotion.getBonusQuantity();
     }
+
+    public int calculateFullAmount(int quantity) {
+        return this.price * quantity;
+    }
+
+   public int calculatePromotionDiscount(int appliedQuantity) {
+        int freeQuantity = appliedQuantity / promotion.getSetSize();
+        return freeQuantity * this.price;
+   }
 }

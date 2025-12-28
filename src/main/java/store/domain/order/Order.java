@@ -2,11 +2,9 @@ package store.domain.order;
 
 import store.domain.order.dto.PromotionConfirmation;
 import store.domain.product.Product;
-import store.domain.product.StockState;
-
-import java.util.List;
 
 public class Order {
+    public static final int NO_DISCOUNT_COST = 0;
     private final Product product;
     private int quantity;
 
@@ -39,7 +37,30 @@ public class Order {
         this.quantity += additionalQuantity;
     }
 
+    public int getDiscountableAmount() {
+        return getFullAmount() - getPromotionDiscount();
+    }
+
     public int getFullAmount() {
-        return this.product.getPrice() * this.quantity;
+        return this.product.calculateFullAmount(this.quantity);
+    }
+
+    public int getPromotionDiscount() {
+        PromotionConfirmation confirmation = getPromotionConfirmation();
+        if (confirmation instanceof PromotionConfirmation.FullyApplicable fullyApplicable) {
+            return calculateDiscount(fullyApplicable);
+        }
+        if (confirmation instanceof PromotionConfirmation.PartiallyApplicable partiallyApplicable) {
+            return calculateDiscount(partiallyApplicable);
+        }
+        return NO_DISCOUNT_COST;
+    }
+
+    private int calculateDiscount(PromotionConfirmation.PartiallyApplicable partial) {
+        return this.product.calculatePromotionDiscount(partial.promotionQuantity());
+    }
+
+    private int calculateDiscount(PromotionConfirmation.FullyApplicable full) {
+        return this.product.calculatePromotionDiscount(full.totalQuantity());
     }
 }

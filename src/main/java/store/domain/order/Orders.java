@@ -1,11 +1,11 @@
 package store.domain.order;
 
-import store.domain.order.dto.PromotionConfirmation;
-
 import java.util.Iterator;
 import java.util.List;
 
 public class Orders implements Iterable<Order> {
+    public static final double MEMBERSHIP_DISCOUNT_RATE = 0.3;
+    public static final int DISCOUNT_LIMIT_AMOUNT = 8000;
     private final List<Order> orders;
 
     public Orders(List<Order> orders) {
@@ -18,9 +18,11 @@ public class Orders implements Iterable<Order> {
     }
 
     public int calculateMembershipDiscount() {
-        List<PromotionConfirmation> promotionConfirmations = this.orders.stream()
-                .map(Order::getPromotionConfirmation)
-                .toList();
+        int totalDiscountable = this.orders.stream()
+                .mapToInt(Order::getDiscountableAmount)
+                .sum();
+        int discount = (int) Math.round(totalDiscountable * MEMBERSHIP_DISCOUNT_RATE);
+        return Math.min(discount, DISCOUNT_LIMIT_AMOUNT);
     }
 
     public int getFullAmount() {
