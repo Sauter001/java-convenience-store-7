@@ -1,5 +1,7 @@
 package store.domain.order;
 
+import store.domain.order.dto.OrderReceiptDto;
+
 import java.util.Iterator;
 import java.util.List;
 
@@ -29,5 +31,11 @@ public class Orders implements Iterable<Order> {
         return this.orders.stream()
                 .mapToInt(Order::getFullAmount)
                 .sum();
+    }
+
+    public List<OrderReceiptDto> toReceiptDtos() {
+        return this.orders.stream()
+                .map(Order::toReceiptDto)
+                .toList();
     }
 }

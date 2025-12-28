@@ -1,5 +1,6 @@
 package store.domain.order;
 
+import store.domain.order.dto.OrderReceiptDto;
 import store.domain.order.dto.PromotionConfirmation;
 import store.domain.product.Product;
 
@@ -35,6 +36,10 @@ public class Order {
 
     public void increaseQuantity(int additionalQuantity) {
         this.quantity += additionalQuantity;
+    }
+
+    public OrderReceiptDto toReceiptDto() {
+        return new OrderReceiptDto(this.product.getName(), quantity, getFullAmount());
     }
 
     public int getDiscountableAmount() {
