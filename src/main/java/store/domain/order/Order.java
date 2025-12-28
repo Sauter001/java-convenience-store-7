@@ -48,7 +48,16 @@ public class Order {
     }
 
     public int getDiscountableAmount() {
-        return getFullAmount() - getPromotionDiscount();
+        PromotionConfirmation confirmation = getPromotionConfirmation();
+        // 프로모션이 전혀 없으면 전체 금액이 멤버십 할인 대상
+        if (confirmation instanceof PromotionConfirmation.NoPromotion) {
+            return getFullAmount();
+        }
+        // 프로모션이 일부라도 적용되면 정가 구매 부분만 할인 대상
+        if (confirmation instanceof PromotionConfirmation.PartiallyApplicable partial) {
+            return partial.regularPriceQuantity() * product.getPrice();
+        }
+        return 0;
     }
 
     public int getFullAmount() {
