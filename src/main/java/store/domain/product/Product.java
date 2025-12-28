@@ -25,6 +25,10 @@ public class Product {
         this.promotion = promotion;
     }
 
+    public int getPrice() {
+        return price;
+    }
+
     public String getName() {
         return name;
     }
@@ -60,17 +64,32 @@ public class Product {
 
     public PromotionConfirmation getPromotionConfirmation(int quantity) {
         StockState state = getStockState(quantity);
-        if (state == StockState.INSUFFICIENT) {
-            throw new StockExceededException();
+        validateStock(state);
+        if (!hasPromotion()) {
+            return createNoPromotion(quantity);
         }
+        return determinePromotionType(quantity, state);
+    }
+
+    private PromotionConfirmation determinePromotionType(int quantity, StockState state) {
         if (shouldReturnFullyApplicable(state)) {
             return createFullyApplicable(quantity);
         }
         return createPartiallyApplicable(quantity);
     }
 
+    private static void validateStock(StockState state) {
+        if (state == StockState.INSUFFICIENT) {
+            throw new StockExceededException();
+        }
+    }
+
+    private PromotionConfirmation createNoPromotion(int quantity) {
+        return new PromotionConfirmation.NoPromotion(this.name, quantity);
+    }
+
     private boolean shouldReturnFullyApplicable(StockState state) {
-        return state == StockState.PROMOTION_ONLY || !hasPromotion();
+        return state == StockState.PROMOTION_ONLY;
     }
 
     private PromotionConfirmation createFullyApplicable(int quantity) {

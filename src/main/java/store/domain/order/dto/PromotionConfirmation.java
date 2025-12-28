@@ -8,4 +8,7 @@ public interface PromotionConfirmation {
                                int promotionQuantity,
                                int regularPriceQuantity) implements PromotionConfirmation {
     }
+
+    record NoPromotion(String productName, int totalQuantity) implements PromotionConfirmation {
+    }
 }

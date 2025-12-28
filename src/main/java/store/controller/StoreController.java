@@ -5,7 +5,6 @@ import store.domain.order.Order;
 import store.domain.order.Orders;
 import store.domain.order.dto.OrderForm;
 import store.domain.order.dto.PromotionConfirmation;
-import store.domain.product.Product;
 import store.domain.product.Products;
 import store.exception.ServiceException;
 import store.service.StoreService;
@@ -29,7 +28,6 @@ public class StoreController {
     public void run() {
         displayProducts();
         processOrderWithRetry();
-        processMembershipWithRetry();
     }
 
     private void displayProducts() {
@@ -41,8 +39,11 @@ public class StoreController {
         retry(() -> {
             Orders orders = retry(this::convertFormToOrders);
             processOrders(orders);
+            processMembership(orders);
         });
     }
+
+
 
     private Orders convertFormToOrders() {
         List<OrderForm> orderForms = inputView.readOrders();
@@ -87,15 +88,17 @@ public class StoreController {
         }
     }
 
-    private void processMembershipWithRetry() {
-        retry(() -> {
-            BinaryResponse response = inputView.confirmMembership();
-            processMembershipResponse(response);
-        });
+    private void processMembership(Orders orders) {
+        BinaryResponse response = inputView.confirmMembership();
+        processMembershipResponse(response, orders);
     }
 
-    private void processMembershipResponse(BinaryResponse response) {
+    private void processMembershipResponse(BinaryResponse response, Orders orders) {
+        if (response == BinaryResponse.NO) {
+            return;
+        }
 
+        int memberShipDiscount = orders.calculateMembershipDiscount();
     }
 
     private void retry(Runnable task) {

@@ -38,4 +38,8 @@ public class Order {
     public void increaseQuantity(int additionalQuantity) {
         this.quantity += additionalQuantity;
     }
+
+    public int getFullAmount() {
+        return this.product.getPrice() * this.quantity;
+    }
 }
