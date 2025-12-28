@@ -4,7 +4,6 @@ import camp.nextstep.edu.missionutils.Console;
 import store.domain.io.BinaryResponse;
 import store.domain.order.dto.OrderForm;
 import store.domain.order.dto.PromotionConfirmation;
-import store.exception.InvalidInputException;
 import store.exception.ServiceException;
 import store.parser.input.OrderFormParser;
 import store.parser.input.Parser;
@@ -30,7 +29,7 @@ public class InputView {
 
     public BinaryResponse confirmAdditionalItem(String productName, int additionalQuantity) {
         String message = String.format(
-                "현재 %s은(는) %d개를 무료로 더 받을 수 있습니다. 추가하시겠습니까?" + YES_OR_NO,
+                "현재 %s은(는) %d개를 무료로 더 받을 수 있습니다. 추가하시겠습니까?" + YES_OR_NO + "\n",
                 productName,
                 additionalQuantity
         );
@@ -38,9 +37,7 @@ public class InputView {
     }
 
     private BinaryResponse confirm(String prompt) {
-        System.out.println(prompt);
-        String input = Console.readLine().strip();
-        return BinaryResponse.from(input);
+        return readWithRetry(prompt, BinaryResponse::from);
     }
 
     private <T> T readWithRetry(String prompt, Parser<T> parser) {
@@ -54,5 +51,10 @@ public class InputView {
                 System.out.println(e.getMessage());
             }
         }
+    }
+
+    public BinaryResponse confirmMembership() {
+        String message = "멤버십 할인을 받으시겠습니까?" + YES_OR_NO + "\n";
+        return confirm(message);
     }
 }

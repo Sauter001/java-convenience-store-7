@@ -15,7 +15,7 @@ public enum BinaryResponse {
 
     public static BinaryResponse from(String command) {
         return Arrays.stream(values())
-                .filter(r -> r.commands.contains(command.toUpperCase()))
+                .filter(r -> r.commands.contains(command.strip().toUpperCase()))
                 .findFirst()
                 .orElseThrow(InvalidInputException::new);
     }
