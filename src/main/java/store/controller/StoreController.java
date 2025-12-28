@@ -32,11 +32,9 @@ public class StoreController {
         processMembershipWithRetry();
     }
 
-    private void processMembershipWithRetry() {
-        retry(() -> {
-            BinaryResponse response = inputView.confirmMembership();
-            processMembershipResponse(response);
-        });
+    private void displayProducts() {
+        Products products = storeService.findAllProducts();
+        outputView.showStockInfo(products.toAllDisplayDtos());
     }
 
     private void processOrderWithRetry() {
@@ -44,15 +42,6 @@ public class StoreController {
             Orders orders = retry(this::convertFormToOrders);
             processOrders(orders);
         });
-    }
-
-    private void displayProducts() {
-        Products products = storeService.findAllProducts();
-        outputView.showStockInfo(products.toAllDisplayDtos());
-    }
-
-    private void processMembershipResponse(BinaryResponse response) {
-
     }
 
     private Orders convertFormToOrders() {
@@ -96,6 +85,17 @@ public class StoreController {
         if (response == BinaryResponse.NO) {
             order.adjustQuantity(partial.promotionQuantity());
         }
+    }
+
+    private void processMembershipWithRetry() {
+        retry(() -> {
+            BinaryResponse response = inputView.confirmMembership();
+            processMembershipResponse(response);
+        });
+    }
+
+    private void processMembershipResponse(BinaryResponse response) {
+
     }
 
     private void retry(Runnable task) {
