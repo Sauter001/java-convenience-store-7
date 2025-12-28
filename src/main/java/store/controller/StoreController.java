@@ -27,12 +27,32 @@ public class StoreController {
     }
 
     public void run() {
-        Products products = storeService.findAllProducts();
-        outputView.showStockInfo(products.toAllDisplayDtos());
+        displayProducts();
+        processOrderWithRetry();
+        processMembershipWithRetry();
+    }
+
+    private void processMembershipWithRetry() {
+        retry(() -> {
+            BinaryResponse response = inputView.confirmMembership();
+            processMembershipResponse(response);
+        });
+    }
+
+    private void processOrderWithRetry() {
         retry(() -> {
             Orders orders = retry(this::convertFormToOrders);
             processOrders(orders);
         });
+    }
+
+    private void displayProducts() {
+        Products products = storeService.findAllProducts();
+        outputView.showStockInfo(products.toAllDisplayDtos());
+    }
+
+    private void processMembershipResponse(BinaryResponse response) {
+
     }
 
     private Orders convertFormToOrders() {
