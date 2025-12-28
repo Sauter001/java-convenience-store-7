@@ -103,6 +103,7 @@ class PromotionSuggestionTest {
     @DisplayName("콜라 15개 주문 시 부분 적용 안내해야 함")
     void should_return_partially_applicable_when_order_15() {
         // Given: 2+1 프로모션, 프로모션 재고 10개, 일반 재고 10개
+        //        maxSets = 10 / 3 = 3, promotionQuantity = 9, regularPriceQuantity = 6
         Stock stock = new Stock(10, 10);
         Promotion promotion = createActivePromotion("탄산2+1", 2, 1);
         Product product = new Product("콜라", 1000, stock, promotion);
@@ -114,8 +115,8 @@ class PromotionSuggestionTest {
         assertThat(confirmation).isInstanceOf(PromotionConfirmation.PartiallyApplicable.class);
         PromotionConfirmation.PartiallyApplicable partial =
             (PromotionConfirmation.PartiallyApplicable) confirmation;
-        assertThat(partial.promotionQuantity()).isEqualTo(10);
-        assertThat(partial.regularPriceQuantity()).isEqualTo(5);
+        assertThat(partial.promotionQuantity()).isEqualTo(9);
+        assertThat(partial.regularPriceQuantity()).isEqualTo(6);
     }
 
     @Test

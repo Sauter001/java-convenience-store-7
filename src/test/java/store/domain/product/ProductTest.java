@@ -33,6 +33,7 @@ class ProductTest {
     @Test
     void should_return_partially_applicable_when_promotion_stock_insufficient() {
         // Given: 프로모션 재고 5개, 일반 재고 10개, 주문 7개
+        //        maxSets = 5 / 3 = 1, promotionQuantity = 3, regularPriceQuantity = 4
         Stock stock = new Stock(10, 5);
         Promotion promotion = createActivePromotion("탄산2+1", 2, 1);
         Product product = new Product("콜라", 1000, stock, promotion);
@@ -44,8 +45,8 @@ class ProductTest {
         assertThat(result).isInstanceOf(PromotionConfirmation.PartiallyApplicable.class);
         PromotionConfirmation.PartiallyApplicable partial = (PromotionConfirmation.PartiallyApplicable) result;
         assertThat(partial.productName()).isEqualTo("콜라");
-        assertThat(partial.promotionQuantity()).isEqualTo(5);
-        assertThat(partial.regularPriceQuantity()).isEqualTo(2);
+        assertThat(partial.promotionQuantity()).isEqualTo(3);
+        assertThat(partial.regularPriceQuantity()).isEqualTo(4);
     }
 
     @Test
