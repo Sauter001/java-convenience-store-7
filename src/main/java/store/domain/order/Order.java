@@ -10,4 +10,8 @@ public class Order {
         this.product = product;
         this.quantity = quantity;
     }
+
+    public int getFullPrice() {
+        return this.product.getFullPrice(quantity);
+    }
 }

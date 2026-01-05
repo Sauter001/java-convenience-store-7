@@ -17,7 +17,7 @@ public class Stock {
         return normalStock;
     }
 
-    public int getSetSize() {
+    public int getTotalSize() {
         return promotionStock + normalStock;
     }
 }

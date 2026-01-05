@@ -33,4 +33,7 @@ public class StoreService {
         }
         return new Orders(orderList);
     }
+
+    public Orders findAddibleOrders(Orders orders) {
+    }
 }

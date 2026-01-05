@@ -4,6 +4,7 @@ import store.domain.io.BinaryResponse;
 import store.domain.order.Orders;
 import store.domain.order.dto.OrderForm;
 import store.domain.product.Products;
+import store.domain.receipt.Giveaways;
 import store.error.StoreException;
 import store.service.StoreService;
 import store.view.InputView;
@@ -37,8 +38,19 @@ public class Controller {
         retry(() -> {
             List<OrderForm> orderForms = inputView.readOrders();
             Orders orders = storeService.convertToOrders(orderForms);
+            Giveaways giveaways = askAdditional(orders);
+            askMembership(orders);
         });
         return askContinue();
+    }
+
+    private Giveaways askAdditional(Orders orders) {
+        Orders applicableOrders = storeService.findAddibleOrders(orders);
+
+        return null;
+    }
+
+    private void askMembership(Orders orders) {
     }
 
     private void displayProductInfo() {

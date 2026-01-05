@@ -8,4 +8,14 @@ public class Orders {
     public Orders(List<Order> orders) {
         this.orders = orders;
     }
+
+    public int getFullPriceOfAllProducts() {
+        return this.orders.stream()
+                .mapToInt(Order::getFullPrice)
+                .sum();
+    }
+
+    public boolean isEmpty() {
+        return this.orders.isEmpty();
+    }
 }

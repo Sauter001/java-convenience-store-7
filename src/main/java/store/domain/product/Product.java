@@ -48,4 +48,8 @@ public class Product {
     public boolean nameEquals(String name) {
         return this.name.equals(name);
     }
+
+    public int getFullPrice(int quantity) {
+        return this.price * quantity;
+    }
 }
