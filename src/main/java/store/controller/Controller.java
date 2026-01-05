@@ -1,12 +1,14 @@
 package store.controller;
 
 import store.domain.io.BinaryResponse;
+import store.domain.order.dto.OrderForm;
 import store.domain.product.Products;
 import store.error.StoreException;
 import store.service.StoreService;
 import store.view.InputView;
 import store.view.OutputView;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 public class Controller {
@@ -32,6 +34,7 @@ public class Controller {
     private BinaryResponse processPurchase() {
         Products products = storeService.readProducts();
         outputView.displayProducts(products.toOverviewDtos());
+        List<OrderForm> orderForms = inputView.readOrders();
         return askContinue();
     }
 
