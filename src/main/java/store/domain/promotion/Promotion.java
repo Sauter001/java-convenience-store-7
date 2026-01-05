@@ -25,4 +25,8 @@ public class Promotion {
     public int hashCode() {
         return Objects.hashCode(name);
     }
+
+    public boolean nameEquals(String name) {
+        return this.name.equals(name);
+    }
 }

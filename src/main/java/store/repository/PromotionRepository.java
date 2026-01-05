@@ -3,7 +3,9 @@ package store.repository;
 import store.constant.IOConstant;
 import store.domain.io.Row;
 import store.domain.io.Rows;
+import store.domain.product.Product;
 import store.domain.promotion.Promotion;
+import store.error.PromotionNotExistsException;
 import store.error.StoreException;
 import store.parser.io.CsvRowParser;
 import store.parser.row.PromotionRowsParser;
@@ -40,5 +42,12 @@ public class PromotionRepository {
             rowsContent.add(csvRowParser.parse(line));
         }
         return promotionRowsParser.parse(new Rows(rowsContent));
+    }
+
+    public Promotion findByName(String promotionName) {
+        return this.promotions.stream()
+                .filter(p -> p.nameEquals(promotionName))
+                .findFirst()
+                .orElseThrow(PromotionNotExistsException::new);
     }
 }

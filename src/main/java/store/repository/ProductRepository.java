@@ -4,6 +4,9 @@ import store.constant.IOConstant;
 import store.domain.io.Row;
 import store.domain.io.Rows;
 import store.domain.product.Product;
+import store.domain.promotion.Promotion;
+import store.error.ProductNotExistsException;
+import store.error.PromotionNotExistsException;
 import store.error.StoreException;
 import store.parser.io.CsvRowParser;
 import store.parser.row.ProductRowsParser;
@@ -47,5 +50,12 @@ public class ProductRepository {
 
     public List<Product> findAll() {
         return this.products;
+    }
+
+    public Product findByName(String productName) {
+        return this.products.stream()
+                .filter(p -> p.nameEquals(productName))
+                .findFirst()
+                .orElseThrow(ProductNotExistsException::new);
     }
 }

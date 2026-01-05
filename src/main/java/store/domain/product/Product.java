@@ -44,4 +44,8 @@ public class Product {
 
         return List.of(new ProductOverviewDto(this.name, this.price, this.stock.getNormalStock(), null));
     }
+
+    public boolean nameEquals(String name) {
+        return this.name.equals(name);
+    }
 }

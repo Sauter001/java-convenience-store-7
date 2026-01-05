@@ -1,6 +1,7 @@
 package store.controller;
 
 import store.domain.io.BinaryResponse;
+import store.domain.order.Orders;
 import store.domain.order.dto.OrderForm;
 import store.domain.product.Products;
 import store.error.StoreException;
@@ -32,10 +33,17 @@ public class Controller {
     }
 
     private BinaryResponse processPurchase() {
+        displayProductInfo();
+        retry(() -> {
+            List<OrderForm> orderForms = inputView.readOrders();
+            Orders orders = storeService.convertToOrders(orderForms);
+        });
+        return askContinue();
+    }
+
+    private void displayProductInfo() {
         Products products = storeService.readProducts();
         outputView.displayProducts(products.toOverviewDtos());
-        List<OrderForm> orderForms = inputView.readOrders();
-        return askContinue();
     }
 
     private BinaryResponse askContinue() {
