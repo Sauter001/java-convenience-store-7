@@ -35,5 +35,6 @@ public class StoreService {
     }
 
     public Orders findAddibleOrders(Orders orders) {
+        return new Orders(List.of());
     }
 }
